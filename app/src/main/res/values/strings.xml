@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="http://schemas.android.com/tools">
+
+    <!--
+         Used in Action Bar, and in AndroidManifest to tell the device the name of this app.
+         It's to keep this short, so your launcher icon isn't displayed with "The greatest Wea"
+         or something similar.
+    -->
+    <string name="app_name">WetherBot5K</string>
+
+    <!--
+         By convention, "action" denotes that this String will be used as the label for an Action,
+         typically from the action bar.  The ActionBar is limited real estate, so shorter is better.
+    -->
+    <string name="action_settings">Settings</string>
+    <string name="action_map">Map Location</string>
+    <string name="action_share">Share</string>
+
+    <!-- Menu label to fetch updated weather info from the server -->
+    <string name="action_refresh" translatable="false">Refresh</string>
+    <string name="title_activity_detail">Details</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Label for the location preference [CHAR LIMIT=30] -->
+    <string name="pref_location_label">Location</string>
+
+    <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_location_key" translatable="false">location</string>
+
+    <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
+    <string name="pref_location_default" translatable="false">94043</string>
+
+    <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
+    <string name="pref_units_label">Temperature Units</string>
+
+    <!-- Label for metric option in temperature unit preference [CHAR LIMIT=25] -->
+    <string name="pref_units_label_metric">Metric</string>
+
+    <!-- Label for imperial option in temperature unit preference [CHAR LIMIT=25] -->
+    <string name="pref_units_label_imperial">Imperial</string>
+
+    <!-- Key name for temperature unit preference in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_units_key" translatable="false">units</string>
+
+    <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
+    <string name="pref_units_metric" translatable="false">metric</string>
+
+    <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
+    <string name="pref_units_imperial" translatable="false">imperial</string>
+
+
+
+    <!-- Date label when displaying today's weather forecast [CHAR LIMIT=20] -->
+    <string name="today">Today</string>
+
+    <!-- Date label when displaying tomorrow's weather forecast [CHAR LIMIT=20] -->
+    <string name="tomorrow">Tomorrow</string>
+
+
+
+
+    <!-- Date format for displaying day of week and date (i.e. Mon Jun 1) [CHAR LIMIT=20] -->
+
+    <!-- N8NOTE: xliff is not an Android specific thing, it is a 'spec'.. the :g tag is xliff
+    speak for 'generic group placeholder', as I understand it, android just uses the :g id="whatever"
+    atribute as an aid to a translator, I don't think you actually reference "day" or "date" from
+    code anywhere??  Not it's not, but 'format_full_friendly_date' is used in Utility.getFriendlyDayString
+    it is used with Context.getString(resourceId, Object formatArgs...) where formatArgs is a
+    variable length param that will match up with ("day","date") below -->
+
+    <!-- %1$s is a 'format string', which is also not unique to android.. everything in the format
+    string means something, you need to look it up to understand what will actually be replacing
+    the format string, which will be done programmatically -->
+
+    <!-- The general syntax of a format specifier FOR ONE ARGUMENT is:
+    %[flags][width][.precision][argsize]typechar -->
+
+    <!-- The general syntax of a format specifier FOR MORE THAN ONE ARGUMENT is:
+    %n$[flags][width][.precision][argsize]typechar
+    in this case n indicates which argument to use -->
+
+    <!-- so % ALWAYS just starts the format string
+    anything inside [ ] is optional -->
+
+    <!-- some typechars:
+    u = unsigned decimal int
+    f = float real number
+    s = string
+    c = char -->
+
+    <!-- the following format strings have no optional stuff, basically
+    %1$s means 'format string that will use argument number 1 and it's a string
+    %2$s is same thing except it will use argument number 2 -->
+
+    <!-- another thing I learned: keep the <string></string> tags directly touching what they are
+    containing.. it seems that a line feed inserts a space or something.. just keep the string
+    tags away from line feeds -->
+
+    <string name="format_full_friendly_date"><xliff:g id="day">%1$s</xliff:g>,
+        <xliff:g id="date">%2$s</xliff:g></string>
+
+    <!-- and here %1.0f means 'format string that will have only 1 argument, with zero decimal
+    places of precision, of type float -->
+    <!-- \u00B0 is just unicode for the little degree symbol: ° -->
+    <string name="format_temperature"><xliff:g id="temperature">%.0f</xliff:g>\u00B0</string>
+
+    <!-- Windspeed formats -->
+    <!-- Wind in mph [CHAR LIMIT=25] -->
+    <string name="format_wind_mph">Wind: <xliff:g id="speed">
+        %1$1.0f</xliff:g> mph <xliff:g id="direction">%2$s</xliff:g></string>
+
+    <!-- Wind in kph [CHAR LIMIT=25] -->
+    <string name="format_wind_kmh">Wind: <xliff:g id="speed">
+        %1$1.0f</xliff:g> km/h <xliff:g id="direction">%2$s</xliff:g></string>
+
+    <!-- Pressure format CHAR LIMIT=25] -->
+    <string name="format_pressure">Pressure: <xliff:g id="pressure">%1.0f</xliff:g> hPa</string>
+
+    <!-- Humidity format CHAR LIMIT=25]-->
+    <string name="format_humidity">Humidity: <xliff:g id="humidity">%1.0f</xliff:g> %%</string>
+
+
+
+
+    <!-- Account type (for sync-adapter authenticator) -->
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">sunshine.example.com</string>
+    <string name="content_authority">com.example.android.sunshine.app</string>
+
+
+    <!-- Notification Format -->
+    <string name="format_notification">Forecast: <xliff:g id="condition">%1$s</xliff:g> High: <xliff:g id="high">%2$s</xliff:g> Low: <xliff:g id="low">%3$s</xliff:g></string>
+    <!-- Strings related to Notification preference -->
+    <string name="pref_last_notification">last_notification</string>
+
+
+
+    <!-- Strings related to Notification Enabled preference -->
+    <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
+    <string name="pref_enable_notifications_label">Weather Notifications</string>
+    <string name="pref_enable_notifications_true">Enabled</string>
+    <string name="pref_enable_notifications_false">Not Enabled</string>
+    <string name="pref_enable_notifications_default" translatable="false">true</string>
+
+
+</resources>

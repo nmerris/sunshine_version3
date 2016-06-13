@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- only want to display the light blue background for the currently selected forecast list
+    in tablet mode, doesn't make much sense in phone mode since the detail forecast is not onscreen -->
+    <style name="ForecastListItemStyle">
+        <item name="android:choiceMode">singleChoice</item>
+    </style>
+
+
+
+</resources>

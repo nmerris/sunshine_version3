@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- even though this is in a layout folder, you can still reference it in code the same
+    way you do for an xml file in a layout folder, ie 'R.layout.fragment_detail' -->
+    <!-- first Android will check in the most specific folders, like values-sw600dp, then it will check
+    values-land, and finally it will just grab whatever fragment_detail.xml is in base layout folder -->
+    <item name="fragment_detail" type="layout">@layout/fragment_detail_wide</item>
+    
+    
+</resources>

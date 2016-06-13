@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:minHeight="?android:listPreferredItemHeight"
+
+    android:background="@drawable/touch_selector">
+
+    <!-- touch selector makes the blue background when a listview item is selected..
+    see touch_selector in drawable res folder-->
+
+
+    <!-- note: list_item_icon is already 32x32px at mdpi, so that's the same as 32x32 dpi on
+    all devices, because 1px = 1dpi at mdpi per Android, that's why the imageview can just wrap_content
+    on the icon and there is no need to resize it, per this apps design mocks -->
+    <!-- also per mocks, icon should be centered horizontally in a 60dp frame, but height can just
+     wrap content, or I guess whatever I think loooks good -->
+    <FrameLayout
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
+        <!-- there's no point to having this imageview use layout_gravity:center as opposed to
+        center_horizontal, because the frame layout that contains it has height=wrap_content..
+        I do not know it it makes a diff from an efficiency perspective -->
+
+        <!-- setting clickable true allows TalkBack to speak the contentDescription -->
+        <ImageView
+            android:id="@+id/list_item_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"/>
+
+    </FrameLayout>
+
+
+    <!-- assigning width=0dp and weight=1 the the following linear fragment_detail (which is the second
+    child of this fragment_detail's root view: a horizontal linear fragment_detail), means that it will take up all
+    the remaining space that is not taken up by the any other child views of root view.  width=0dp
+    is just a quirky way android deals with this, don't overthink it.. basically the weight takes
+    over if width is 0.  Now if the second linear fragment_detail that holds the hi/low temp HAD specified
+    a weight of, ie, 1 then it would have taken up exactly the same width as the first linear fragment_detail
+    You can also specifiy a weightsum attribute to the parent view, in which case all the direct
+    child views would have to specifiy weights that add up to weightsum, but that's not necessary here
+    -->
+
+    <!-- mock specifies width=175dp for this first textview group, and 125dp for the next group
+    instead of hard coding in 175 and 125dp, it's better to use weights, so that the proportions
+    always look the same on any device.. I just subbed in the actual dp specs for the weights because
+    that seemed more intuitive and easier to change in future if needed, can there really be any
+    meaningful performance hit this way? -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="175"
+
+        android:layout_gravity="center_vertical">
+
+        <!-- textAppearanceLarge is 22sp, small is 14sp -->
+        <TextView
+            android:id="@+id/list_item_date_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="?android:textAppearanceLarge"/>
+
+        <TextView
+            android:id="@+id/list_item_forecast_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="?android:textAppearanceSmall"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="125"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/list_item_high_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/list_item_low_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
+</LinearLayout>

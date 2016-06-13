@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="180">
+
+            <TextView
+                android:id="@+id/detail_day_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-condensed"/>
+
+            <TextView
+                android:id="@+id/detail_date_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@color/text_light"
+                android:fontFamily="sans-serif-condensed"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="670">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/detail_high_temp_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="84sp"/>
+
+                    <TextView
+                        android:id="@+id/detail_low_temp_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="48sp"
+                        android:textColor="@color/text_light"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="32dp">
+
+                    <ImageView
+                        android:id="@+id/detail_icon_imageview"
+                        android:layout_width="144dp"
+                        android:layout_height="144dp"
+                        android:layout_gravity="center_horizontal" />
+
+                    <TextView
+                        android:id="@+id/detail_icon_text_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@color/text_light"
+                        android:fontFamily="sans-serif-condensed"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/detail_humidity_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:layout_marginTop="16dp"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/detail_wind_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="22sp"/>
+
+            <TextView
+                android:id="@+id/detail_pressure_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="22sp" />
+
+            <!-- with enough time I could make this custom view really slick, but as of now this is
+just a proof of concept type deal... it is very limited, doesn't take into account padding,
+doesn't look super nice, doesn't resize well, etc -->
+            <com.example.android.sunshine.app.WindDirectionView
+                android:id="@+id/detail_custom_windview"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="16dp"
+                app:pointerColor="@color/sunshine_dark_blue"
+                app:circleColor="@color/sunshine_light_blue"
+                app:circleRadius="40dp"
+                app:textSize="16sp"
+                app:textColor="@color/text_light"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+
+
+

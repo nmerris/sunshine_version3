@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_map"
+        android:title="@string/action_map"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_refresh"
+        android:title="@string/action_refresh"
+        android:visible="false"
+        app:showAsAction="never" />
+</menu>
+
+<!-- changed visible to false after implementing sync adapter, no need for manual refresh anymore
+only left it in for my own reference if I need to come back to this app to job my memory -->

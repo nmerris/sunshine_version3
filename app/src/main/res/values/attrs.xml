@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!-- used with WindDirectionView, this tells Android what custom xml attributes WDV might use -->
+<resources>
+    <declare-styleable name="WindDirectionView">
+        <attr name="windDescription" format="string"/>
+        <attr name="pointerColor" format="color"/>
+        <attr name="circleRadius" format="dimension"/>
+        <attr name="circleColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="textColor" format="color"/>
+
+    </declare-styleable>
+
+</resources>

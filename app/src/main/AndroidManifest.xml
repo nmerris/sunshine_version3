@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.android.sunshine.app" >
+
+    <!-- This permission is necessary in order for Sunshine to perform network access. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Permissions required by the sync adapter -->
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+
+
+
+    <!-- this is the permission another app needs to access this apps content provider -->
+    <!-- you might use this so that only other apps YOU write can access this apps data -->
+    <!-- or another app would have to know which permission to request to use this apps data,
+         AND the user would have to grant the permission, which in this case would be Licesenced
+         to Kill -->
+    <permission
+        android:name="com.example.android.sunshine.app.LICENSE_TO_KILL"
+        android:protectionLevel="dangerous"
+        android:label="Licensed to Kill!">
+    </permission>
+
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+
+        <!-- activity is one of the 5 high level Android app 'components' -->
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/ForecastTheme">
+
+            <!-- intent is another app 'component' -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- android:parentActivity and <meta-data android:name="..PARENT_ACTIVIT" .. /> both do the
+        same thing, you just need both for compatibiltiy reasons -->
+        <activity
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.sunshine.app.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/SettingsTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.sunshine.app.MainActivity" />
+        </activity>
+
+
+        <!-- service providers are another app 'component' -->
+<!--        <provider
+            android:authorities="com.example.android.sunshine.app"
+            android:name=".data.WeatherProvider"
+            android:enabled="true"
+            android:exported="false" />-->
+
+        <!-- replaced above <provider> with below when switching to sync adapter -->
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.WeatherProvider"
+            android:syncable="true"
+            android:exported="false" />
+        <!-- by setting exported=true, any app that knows the content URI of this apps weather
+             ContentProvider will be able to use it, given it has permission to do so (below) -->
+
+
+        <!-- services are another app 'component' -->
+        <!-- no idea how I would know to use android:authorities here -->
+<!--        <service
+            android:name=".service.SunshineService"
+            android:authorities="com.example.android.sunshine.app"/>-->
+
+
+        <!-- why no authority in receiver?  me not know.. prob. because a Receiver does not
+        itself deal with a ContentProvider -->
+        <!-- registering a receiver here is 'static', you can also do it in code with
+        Context.registerReceiver -->
+<!--        <receiver
+            android:name=".service.SunshineService$SunshineReceiver"
+            android:enabled="true"/>-->
+
+
+        <!-- the last 'component' is broadcast receiver -->
+
+
+
+        <!-- The SyncAdapter service -->
+        <service
+            android:name=".sync.SunshineSyncService"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+
+        </service>
+
+
+
+
+
+        <!-- SyncAdapter's dummy (google calls it a 'stub') AUTHENTICATION service -->
+        <!-- OpenWeatherMap is where this app syncs data, and it does not require any kind of
+        individual user level authentication, but for a SyncAdapter to work, it still needs a stub
+        authentication -->
+        <service
+            android:name=".sync.SunshineAuthenticatorService">
+
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+
+        </service>
+
+
+    </application>
+</manifest>

@@ -1,0 +1,61 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/sunshine_blue</item>
+        <item name="colorPrimaryDark">@color/sunshine_dark_blue</item>
+    </style>
+
+
+    <!-- NOTE: there is no need for a separate 'DetailTheme' here because it automatically inherits
+    from AppTheme, because AppTheme is the highest theme in the heirarchy in the manifest.  If you look
+    in manifest, notice that MainActivity DOES override AppTheme by pointing to ForecastTheme.. this is
+    necessary because we want to show the actual fancy sunshine logo in MainActivities title bar,
+    which AppTheme does not do -->
+
+
+    <!-- Settings activity theme, see v14 and v21 styles versions, need to add the action bar in
+    to the settings activity because it extends PreferenceActivity as opposed to AppCompatActivity like
+    the others, which means it will not automatically get an action bar-->
+    <!-- the only point to having separate v14 and v21 versions is to use Material theme in v21-->
+    <style name="SettingsTheme" parent="AppTheme">
+    </style>
+
+
+    <!-- MAIN ACTIVITY theme (because MainActivity is the 'forecast' -->
+    <!-- it's the same as AppTheme, with one specific <item> that just references the styel below it -->
+    <style name="ForecastTheme" parent="AppTheme">
+        <item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>
+    </style>
+
+
+
+
+
+    <!-- main activity action bar styles -->
+    <!-- here's where we actually override Androids default ActionBar styling.. the parent attr
+    points to the actual action bar style as defined deep within the style heirarchy, you either need
+    to know what to override, or you need to 'go fishing' for it, which is a time consuming pita
+    after you find Widget.AppCompat.Light.ActionBar.Solid.Inverse, you would also see some <item>
+    that you can override, which is how you can actually change the default style.. it's the same
+    thing that is happening in AppTheme with the colorPrimary and colorPrimaryDark overrides, except
+    those were give to us very conveniently when this project was created -->
+
+    <!-- so an <item name="... is always a defined Android constant, but <style name="... is whatever
+    I want to make it for my own reference -->
+    <!-- and the parent="... can either point to an Android default style, or to any style that I
+    have custom made -->
+    <style name="ActionBar.Solid.Sunshine.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="logo">@drawable/ic_logo</item>
+    </style>
+
+
+
+    <!-- do not show the background blue tint in phone mode, see styles-sw600dp -->
+    <style name="ForecastListItemStyle">
+        <item name="android:choiceMode">none</item>
+    </style>
+
+</resources>
