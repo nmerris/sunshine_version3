@@ -18,6 +18,7 @@ package com.example.android.sunshine.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 
@@ -268,7 +269,9 @@ public class Utility {
 
     public static boolean isConnectedToInternet(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo().isConnected();
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        // return true if active network exists and is connected or connecting
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
 }
