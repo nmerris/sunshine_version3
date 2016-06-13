@@ -13,9 +13,12 @@
 
         style="@style/ForecastListItemStyle"/>
 
-<!--    <ListView
-        android:id="@+id/listview_forecast"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>-->
+   <TextView
+       android:id="@+id/message_no_weather_info"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:text="@string/message_no_weather_info_available"
+       android:gravity="center_horizontal"/>
 
 </FrameLayout>
+

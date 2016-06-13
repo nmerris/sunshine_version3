@@ -25,6 +25,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -33,6 +34,7 @@ import android.database.Cursor;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.net.ConnectivityManagerCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 //import com.example.android.sunshine.app.service.SunshineService;
@@ -65,6 +68,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private Callback mCallback;
 
+    private TextView mEmptyForecastTV;
     private ListView mListView;
     // need to init to -1 so that .onLoadFinished can ignore .smoothScrollToPosition in case that
     // mListViewPosition was never actually set, which would be the case the first time this fragment
@@ -211,6 +215,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             // Get a reference to the ListView, and attach this adapter to it.
             mListView = (ListView) rootView.findViewById(R.id.listview_forecast);
             mListView.setAdapter(mForecastAdapter);
+
+            mEmptyForecastTV = (TextView) rootView.findViewById(R.id.message_no_weather_info);
+            mListView.setEmptyView(mEmptyForecastTV);
 
 
             Log.i("ForecastFragment", "mListView id is: " + mListView.getId());
@@ -363,12 +370,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-
         Log.i("ForecastFragment", "just entered onLoadFinished");
 
-
         mForecastAdapter.swapCursor(data);
+
+
+
+        if(!data.moveToFirst()) { // no database data to display
+            if(!Utility.isConnectedToInternet(getActivity())) { // AND no internet access
+                // so update the error msg onscreen, note that the default message is defined in
+                // fragment_main.xml in the text view itself, this is just a more specific msg
+                mEmptyForecastTV.setText(getString(R.string.message_no_network_access));
+            }
+        }
+
 
         // scroll to the position in the list view that was last on screen,
         // this is needed for tablet mode when the device is rotated (it took 2 consecutive

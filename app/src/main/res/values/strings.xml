@@ -143,7 +143,8 @@
     <string name="pref_enable_notifications_default" translatable="false">true</string>
 
     <!-- no weather info available -->
-    <string name="no_weather_info_available">No Weather Information Available</string>
+    <string name="message_no_weather_info_available">No Weather Information Available</string>
+    <string name="message_no_network_access">No Internet Connection Available</string>
 
 
 </resources>
