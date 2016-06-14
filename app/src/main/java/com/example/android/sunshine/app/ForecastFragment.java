@@ -24,9 +24,11 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
@@ -53,7 +55,7 @@ import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} fragment_detail.
  */
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     private static final int PENDING_INTENT_REQUEST_CODE = 3;
@@ -90,6 +92,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
 
 
+
     /**
      * Required interface for any activity that hosts this fragment
      */
@@ -101,6 +104,36 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
          */
         void onItemSelected(Uri dateUri);
     }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        if(key.equals(getString(R.string.key_sharedprefs_sync_result))) {
+//            int status = sharedPreferences.getInt(getString(R.string.key_sharedprefs_sync_result),
+//                    SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN);
+
+            updateEmptyView();
+
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+
+    @Override
+    public void onPause() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
 
 
 
@@ -193,7 +226,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         //outState.putParcelable(SELECTED_ITEM_URI, mRowJustSelected);
 
 
-        Log.i("ForecastFragment", "just put in outState selected item pos: " + mListViewPosition);
+        Log.i(LOG_TAG, "just put in outState selected item pos: " + mListViewPosition);
 
 
         super.onSaveInstanceState(outState);
@@ -216,11 +249,16 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             mListView = (ListView) rootView.findViewById(R.id.listview_forecast);
             mListView.setAdapter(mForecastAdapter);
 
+
+
+            // set the empty view for this adapter, to show helpful error msgs to user if no data avail
             mEmptyForecastTV = (TextView) rootView.findViewById(R.id.message_no_weather_info);
             mListView.setEmptyView(mEmptyForecastTV);
 
 
-            Log.i("ForecastFragment", "mListView id is: " + mListView.getId());
+
+
+            Log.i(LOG_TAG, "mListView id is: " + mListView.getId());
 
 
 
@@ -229,7 +267,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                Log.i("ForecastFragment", "just clicked item at position: " + position);
+                Log.i(LOG_TAG, "just clicked item at position: " + position);
                 //Log.i("ForecastFragment", "  and View.isActivated is now: " + view.isActivated());
 
                 mListViewPosition = position;
@@ -370,20 +408,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i("ForecastFragment", "just entered onLoadFinished");
+        Log.i(LOG_TAG, "just entered onLoadFinished");
 
         mForecastAdapter.swapCursor(data);
-
-
-
-        if(!data.moveToFirst()) { // no database data to display
-            if(!Utility.isConnectedToInternet(getActivity())) { // AND no internet access
-                // so update the error msg onscreen, note that the default message is defined in
-                // fragment_main.xml in the text view itself, this is just a more specific msg
-                mEmptyForecastTV.setText(getString(R.string.message_no_network_access));
-            }
-        }
-
 
         // scroll to the position in the list view that was last on screen,
         // this is needed for tablet mode when the device is rotated (it took 2 consecutive
@@ -391,9 +418,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         if(mListViewPosition != ListView.INVALID_POSITION)
             mListView.smoothScrollToPosition(mListViewPosition);
 
+        updateEmptyView();
+
 
 
     }
+
+
+
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -521,17 +554,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
 
 
-
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        updateWeather();
-//    }
-
-
-
-
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecastfragment, menu);
@@ -654,5 +676,33 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
 
+    // updates the empty textview that is used to display a more precise error msg to user when there
+    // is any kind of issue that causes that app to not display the weather list
+    private void updateEmptyView() {
+        if ( mForecastAdapter.getCount() == 0 ) {
+            TextView tv = (TextView) getView().findViewById(R.id.message_no_weather_info);
+            if ( null != tv ) {
+                // if cursor is empty, why? do we have an invalid location
+                int message = R.string.message_no_weather_info_available;
+                @SunshineSyncAdapter.LocationStatus int location = Utility.getLocationStatus(getActivity());
+                switch (location) {
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_DOWN:
+                        message = R.string.message_empty_forecast_list_server_down;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
+                        message = R.string.message_empty_forecast_list_server_error;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
+                        message = R.string.message_invalid_location;
+                        break;
+                    default:
+                        if (!Utility.isConnectedToInternet(getActivity()) ) {
+                            message = R.string.message_no_network_access;
+                        }
+                }
+                tv.setText(message);
+            }
+        }
+    }
 
 }

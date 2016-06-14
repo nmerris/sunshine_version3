@@ -104,17 +104,32 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
     // ANNOTATIONS ADDED FOR PROJECT 3
+    // the whole point here is to avoid using an enum, which is apparently not very efficient
     // Note: these fancy annotations are available through the appcompat library, although a library
     // can be used that only includes the annotation thingamajigs
+
+    // NOTE: RetentionPolicy.SOURCE is a paramater for the @Retention annotation, two other options
+    // for params for this annotation: .CLASS and .RUNTIME (fyi)
     @Retention(RetentionPolicy.SOURCE)
+    // NOTE: the four ints are the parameters for the @IntDef annotation
     @IntDef({LOCATION_STATUS_OK, LOCATION_STATUS_SERVER_DOWN, LOCATION_STATUS_SERVER_INVALID,
-        LOCATION_STATUS_UNKNOWN})
-        // ANNOTATED INTERFACE!!
-        public @interface NavigationMode{}
-        public static final int LOCATION_STATUS_OK = 0;
-        public static final int LOCATION_STATUS_SERVER_DOWN = 1;
-        public static final int LOCATION_STATUS_SERVER_INVALID = 2;
-        public static final int LOCATION_STATUS_UNKNOWN = 3;
+        LOCATION_STATUS_UNKNOWN, LOCATION_STATUS_INVALID})
+    // @interface below is more like a 'pseudo annotation' that marks NavigationMode as a class that is an annotation
+    // you could say it defines an 'annotation type'
+    // you could make this annotation appear in javadocs by preceding it with this annotation:
+//    @Documented
+    public @interface LocationStatus{
+        // in here there could be 'annotation type element definitions' that might have default values
+        // you would use this eleswhere as an annotation like this: @LocationStatus, or if it had
+        // and parameters, like this: @LocationStatus(......)
+
+    }
+    // below are just POJ ints
+    public static final int LOCATION_STATUS_OK = 0;
+    public static final int LOCATION_STATUS_SERVER_DOWN = 1;
+    public static final int LOCATION_STATUS_SERVER_INVALID = 2;
+    public static final int LOCATION_STATUS_UNKNOWN = 3;
+    public static final int LOCATION_STATUS_INVALID = 4;
 
 
 
@@ -174,8 +189,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
 
-        // check for Marshmellow.. really want to get this notification update in the tray
-        // will only update the notification on marshmellow if it's already visible and it's been
+        // check for Marshmallow.. really want to get this notification update in the tray
+        // will only update the notification on marshmallow if it's already visible and it's been
         // less than 24 hrs, if > 24 hrs, always update it (which will make it show up again)
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -309,17 +324,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         ContentResolver.requestSync(getSyncAccount(context),
                 context.getString(R.string.content_authority), bundle);
     }
-//    public static void syncImmediately(Context context) {
-//        Bundle bundle = new Bundle();
-//        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-//        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-//
-//        // I added this and changed the signature to support it
-//        bundle.putString(LOCATION_KEY, Utility.getPreferredLocation(context));
-//
-//        ContentResolver.requestSync(getSyncAccount(context),
-//                context.getString(R.string.content_authority), bundle);
-//    }
+
 
 
 
@@ -438,6 +443,13 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
 
+    private void updateSyncStatusInSharedPrefs(@LocationStatus int status) {
+        Log.e(LOG_TAG, "in updateSyncStatusInSharePrefs, about to update sp with status: " + status);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(getContext().getString(R.string.key_sharedprefs_sync_result), status);
+        editor.commit();
+    }
 
 
 
@@ -480,7 +492,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             locationQuery = Utility.getPreferredLocation(getContext());
         }
 
-        Log.i(LOG_TAG, "inside onPerformSync, locationQuery is: " + locationQuery);
+        Log.e(LOG_TAG, "inside onPerformSync, locationQuery is: " + locationQuery);
 
 
 
@@ -506,6 +518,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
+//            final String FORECAST_BASE_URL =
+//                    "http://google.com/ping?";
+//            final String FORECAST_BASE_URL =
+//                    "http://google.com/?";
             final String FORECAST_BASE_URL =
                     "http://api.openweathermap.org/data/2.5/forecast/daily?";
             final String QUERY_PARAM = "q";
@@ -548,6 +564,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
+                updateSyncStatusInSharedPrefs(LOCATION_STATUS_SERVER_DOWN);
                 return;
             }
             forecastJsonStr = buffer.toString();
@@ -561,9 +578,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
+            updateSyncStatusInSharedPrefs(LOCATION_STATUS_SERVER_DOWN);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            updateSyncStatusInSharedPrefs(LOCATION_STATUS_SERVER_INVALID);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -630,8 +649,43 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         final String OWM_DESCRIPTION = "main";
         final String OWM_WEATHER_ID = "id";
 
+        final String OWN_MESSAGE_CODE = "cod";
+
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
+
+            if(forecastJson.has(OWN_MESSAGE_CODE)) {
+                // get the response code from the OWM server
+                int serverCode = forecastJson.getInt(OWN_MESSAGE_CODE);
+
+                switch (serverCode) {
+                    case HttpURLConnection.HTTP_OK: // FYI: HTTP_OK is code 200
+                        // good server response, so break out and continue as usual
+                        break;
+                    case HttpURLConnection.HTTP_NOT_FOUND:
+                        // got a response, but in this case HTTP_NOT_FOUND (which is a 404 error code)
+                        // means that the location we sent over could not be understood, so update the
+                        // value in sharedPrefs and get the heck out of here
+                        updateSyncStatusInSharedPrefs(LOCATION_STATUS_INVALID);
+                        return;
+                    default:
+                        // for all other cases, just update s.p. with a more generic msg and get out of here
+                        updateSyncStatusInSharedPrefs(LOCATION_STATUS_SERVER_DOWN);
+                        return;
+                }
+
+
+
+                if(serverCode == 404) { // if it's saying that the location we sent was invalid
+                    // then update sharedPrefs so the user will see a meaningful error msg when
+                    // the adapter in ForecastFragment ends up showing the empty text view
+                    updateSyncStatusInSharedPrefs(LOCATION_STATUS_INVALID);
+                    Log.e(LOG_TAG, "in getWeatherDataFromJson, just set s.p. location status to INVALID");
+                    return;
+                }
+            }
+
+
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
             JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
@@ -806,10 +860,12 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             Log.d(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
+            updateSyncStatusInSharedPrefs(LOCATION_STATUS_OK);
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            updateSyncStatusInSharedPrefs(LOCATION_STATUS_SERVER_INVALID);
         }
     }
 
