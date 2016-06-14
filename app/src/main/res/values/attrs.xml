@@ -10,7 +10,10 @@
         <attr name="circleColor" format="color"/>
         <attr name="textSize" format="dimension"/>
         <attr name="textColor" format="color"/>
+    </declare-styleable>
 
+    <declare-styleable name="LocationEditTextPreference">
+        <attr name="minUserInputLength" format="integer"/>
     </declare-styleable>
 
 </resources>

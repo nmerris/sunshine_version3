@@ -40,7 +40,7 @@ import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
  */
 public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
+    public static final String LOG_TAG = SettingsActivity.class.getSimpleName();
 
     // this was added per Udacity to fix a bug
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom_attrs="http://schemas.android.com/apk/res/com.example.android.sunshine.app"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditTextPreference
+<!--    <EditTextPreference
         android:title="@string/pref_location_label"
         android:key="@string/pref_location_key"
         android:defaultValue="@string/pref_location_default"
         android:inputType="text"
         android:singleLine="true"
-        android:hint="Zip Code Entry"/>
+        android:hint="Zip Code Entry"/>-->
+
+    <!-- NOTE: to use the custom LocationEditTextPreference view, must declare a diff xml namespace
+    like this: 'http://schemas.android.com/apk/res/[your package name]' -->
+    <!-- 'custom_attrs' above in the xmlns declaration is a 'directive' aka an alias that allows me
+    to just use 'custom_attrs' below to delcare the custom attributes-->
+    <!-- the attributes (all of them) are passed to LocationEditTextPreference constructor -->
+    <com.example.android.sunshine.app.LocationEditTextPreference
+        android:title="@string/pref_location_label"
+        android:key="@string/pref_location_key"
+        android:defaultValue="@string/pref_location_default"
+        android:inputType="text"
+        android:singleLine="true"
+        android:hint="Zip Code Entry"
+
+        custom_attrs:minUserInputLength="3"/>
+
+
 
     <ListPreference
         android:title="@string/pref_units_label"
